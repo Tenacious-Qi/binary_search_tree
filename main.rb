@@ -26,5 +26,17 @@ class Tree
     right = build_tree(array[(mid_index + 1)...array.size])
     mid_node = Node.new(array[mid_index], left, right)
   end
-  
+
+  def insert(value)
+    current = @root
+    until current.left_child.left_child.nil? || current.right_child.right_child.nil?
+      if value < current.data
+        current = current.left_child
+        current.left_child.left_child = Node.new(value)
+      elsif value > current.data
+        current = current.right_child
+        current.right_child.right_child = Node.new(value)
+      end
+    end
+  end
 end
