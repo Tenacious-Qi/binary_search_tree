@@ -43,14 +43,34 @@ class Tree
     node
   end
 
+
   def delete(value, node = @root)
-    if node.data == value
-      node = nil
-    elsif value < node.data
+    return nil if @root.nil?
+
+    if value < node.data
       node.left_child = delete(value, node.left_child)
-    else value > node.data
+    elsif value > node.data
       node.right_child = delete(value, node.right_child)
+    else
+      if node.left_child.nil? && node.right_child.nil? # no children (node is a leaf)
+        node = nil
+      elsif node.left_child.nil? # node has child on the right
+        node = node.right_child
+      elsif node.right_child.nil? # node has one child on the left
+        node = node.left_child
+      else # node has two children
+        # find largest node in left subtree
+        find_max(node.left_child)
+        # copy largest value of left subtree into node to delete
+      end 
     end
+    node
+  end
+  # find max of left subtree
+  def find_max(node)
+    return node if node.nil?
+    left_max = find_max(node.left_child)
+    
     node
   end
 end
