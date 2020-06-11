@@ -42,4 +42,15 @@ class Tree
     end
     node
   end
+
+  def delete(value, node = @root)
+    if node.data == value
+      node = nil
+    elsif value < node.data
+      node.left_child = delete(value, node.left_child)
+    else value > node.data
+      node.right_child = delete(value, node.right_child)
+    end
+    node
+  end
 end
