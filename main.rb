@@ -2,7 +2,7 @@ class Node
   include Comparable
   
   def <=> (other_node)
-    data <=> other_node.data
+    data <=> other_node.data unless other_node.nil?
   end
 
   attr_accessor :data, :left_child, :right_child
@@ -29,48 +29,51 @@ class Tree
     mid_index = (array.size - 1) / 2
     left = build_tree(array[0...mid_index])
     right = build_tree(array[(mid_index + 1)...array.size])
-    node = Node.new(array[mid_index], left, right)
+    root = Node.new(array[mid_index], left, right)
   end
 
-  def insert(value, node = @root)
-    if node.nil?
-      node = Node.new(value)
-    elsif value < node.data
-      node.left_child = insert(value, node.left_child)
+  def insert(value, root = @root)
+    if root.nil?
+      root = root.new(value)
+    elsif value < root.data
+      root.left_child = insert(value, root.left_child)
     else
-      node.right_child = insert(value, node.right_child)
+      root.right_child = insert(value, root.right_child)
     end
-    node
+    root
   end
 
 
-  def delete(value, node = @root)
-    return nil if @root.nil?
-
-    if value < node.data
-      node.left_child = delete(value, node.left_child)
-    elsif value > node.data
-      node.right_child = delete(value, node.right_child)
+  def delete(value, root = @root)
+    return root if root.nil?
+    
+    puts "hello"
+    if value < root.data
+      root.left_child = delete(value, root.left_child)
+    elsif value > root.data
+      root.right_child = delete(value, root.right_child)
     else
-      if node.left_child.nil? && node.right_child.nil? # no children (node is a leaf)
-        node = nil
-      elsif node.left_child.nil? # node has child on the right
-        node = node.right_child
-      elsif node.right_child.nil? # node has one child on the left
-        node = node.left_child
-      else # node has two children
-        # find largest node in left subtree
-        find_max(node.left_child)
-        # copy largest value of left subtree into node to delete
+      if root.left_child.nil? && root.right_child.nil? # no children (root is a leaf)
+        root = nil
+      elsif root.left_child.nil? # root has child on the right
+        root = root.right_child
+      elsif root.right_child.nil? # root has one child on the left
+        root = root.left_child
+      else # root has two children
+        temp = find_min(root.right_child)
+        root.data = temp.data
+        root.right_child = delete(temp.data, root.right_child)
       end 
     end
-    node
+    root
   end
-  # find max of left subtree
-  def find_max(node)
-    return node if node.nil?
-    left_max = find_max(node.left_child)
-    
+
+  # finds smallest root in the given tree
+  def find_min(node)
+    return nil if node.nil?
+
+    return find_min(node.left_child) unless node.left_child.nil?
+
     node
   end
 end
