@@ -2,7 +2,7 @@ class Node
   include Comparable
   
   def <=> (other_node)
-    data <=> other_node.data unless other_node.nil?
+    data <=> other_node.data
   end
 
   attr_accessor :data, :left_child, :right_child
@@ -43,11 +43,9 @@ class Tree
     root
   end
 
-
   def delete(value, root = @root)
     return root if root.nil?
     
-    puts "hello"
     if value < root.data
       root.left_child = delete(value, root.left_child)
     elsif value > root.data
@@ -60,19 +58,18 @@ class Tree
       elsif root.right_child.nil? # root has one child on the left
         root = root.left_child
       else # root has two children
-        temp = find_min(root.right_child)
+        temp = find_max(root.left_child)
         root.data = temp.data
-        root.right_child = delete(temp.data, root.right_child)
+        root.left_child = delete(temp.data, root.left_child)
       end 
     end
     root
   end
 
   # finds smallest root in the given tree
-  def find_min(node)
+  def find_max(node)
     return nil if node.nil?
-
-    return find_min(node.left_child) unless node.left_child.nil?
+    return find_max(node.right_child) unless node.right_child.nil?
 
     node
   end
