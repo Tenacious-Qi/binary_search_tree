@@ -66,11 +66,22 @@ class Tree
     root
   end
 
-  # finds smallest root in the given tree
+  # finds largest node in left subtree
   def find_max(node)
     return nil if node.nil?
     return find_max(node.right_child) unless node.right_child.nil?
 
     node
   end
+
+  def find_node(value, root = @root)
+    return root if value == root.data
+
+    if value < root.data
+      root = find_node(value, root.left_child)
+    else
+      root = find_node(value, root.right_child)
+    end
+  end
 end
+
