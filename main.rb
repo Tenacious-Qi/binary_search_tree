@@ -74,13 +74,13 @@ class Tree
     node
   end
 
-  def find_node(value, root = @root)
-    return root if value == root.data
+  def find_node(value, node = @root)
+    return node if value == node.data
 
-    if value < root.data
-      root = find_node(value, root.left_child)
+    if value < node.data
+      node = find_node(value, node.left_child)
     else
-      root = find_node(value, root.right_child)
+      node = find_node(value, node.right_child)
     end
   end
 end
