@@ -83,5 +83,33 @@ class Tree
       node = find_node(value, node.right_child)
     end
   end
+
+  # iterative solution
+  def level_order(node = @root, queue = [], display_array = [])
+    return if @root.nil?
+
+    queue << node
+    until queue.empty?
+      node = queue.first
+      yield(node) if block_given?
+      display_array << node.data unless block_given?
+      queue << node.left_child unless node.left_child.nil?
+      queue << node.right_child unless node.right_child.nil?
+      queue.shift
+    end
+    block_given? ? self : display_array
+  end
+
+  # recursive solution
+  def level_order(node = @root, queue = [], display_array = [])
+    return display_array if node.nil?
+
+    queue << node
+    node = queue.first
+    display_array << node.data
+    level_order(node.left_child, queue[1..-1], display_array)
+    level_order(node.right_child, queue[1..-1], display_array)
+  end
+
 end
 
