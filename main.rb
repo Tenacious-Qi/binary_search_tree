@@ -1,3 +1,4 @@
+require 'pry'
 class Node
   include Comparable
   
@@ -84,7 +85,7 @@ class Tree
     end
   end
 
-  # iterative solution
+  # iterative solution -- returns array of values if no block given
   def level_order(node = @root, queue = [], display_array = [])
     return if @root.nil?
 
@@ -97,18 +98,25 @@ class Tree
       queue << node.right_child unless node.right_child.nil?
       queue.shift
     end
-    block_given? ? self : display_array
+    block_given? ? yield(node) : display_array
   end
 
-  # recursive solution
-  def level_order(node = @root, queue = [], display_array = [])
-    return display_array if node.nil?
+  # recursive solution -- returns array of values if no block given
+  def level_order(node = @root, queue = [], display_array = [], &block)
+    return display_array if node.nil? unless block_given?
+    return if node.nil?
 
     queue << node
     node = queue.first
-    display_array << node.data
-    level_order(node.left_child, queue[1..-1], display_array)
-    level_order(node.right_child, queue[1..-1], display_array)
+    if block_given?
+      level_order(node.left_child, queue[1..-1], &block)
+      level_order(node.right_child, queue[1..-1], &block)
+    else
+      display_array << node.data 
+      level_order(node.left_child, queue[1..-1], display_array)
+      level_order(node.right_child, queue[1..-1], display_array)
+    end
+    block_given? ? yield(node) : display_array
   end
 
 end
