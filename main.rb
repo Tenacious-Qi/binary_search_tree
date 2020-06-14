@@ -2,8 +2,8 @@ require 'pry'
 class Node
   include Comparable
   
-  def <=> (other_node)
-    data <=> other_node.data
+  def <=> (other)
+    data <=> other.data
   end
 
   attr_accessor :data, :left_child, :right_child
@@ -19,7 +19,7 @@ class Tree
   attr_accessor :root
 
   def initialize(array = nil)
-    @root = build_tree(arr) unless array.nil?
+    @root = build_tree(array) unless array.nil?
   end
 
   def build_tree(array)
@@ -77,8 +77,9 @@ class Tree
   end
 
   def find_node(value, node = @root)
+    return nil if node.nil?
     return node if value == node.data
-
+  
     if value < node.data
       node = find_node(value, node.left_child)
     else
@@ -87,37 +88,82 @@ class Tree
   end
 
   # iterative solution -- returns array of values if no block given
-  def level_order(node = @root, queue = [], display_array = [])
-    return if @root.nil?
+  # def level_order(node = @root, queue = [], display_array = [])
+  #   return if node.nil?
 
-    queue << node
-    until queue.empty?
-      node = queue.first
-      yield(node) if block_given?
-      display_array << node.data unless block_given?
-      queue << node.left_child unless node.left_child.nil?
-      queue << node.right_child unless node.right_child.nil?
-      queue.shift
+  #   queue << node
+  #   until queue.empty?
+  #     node = queue.first
+  #     yield(node) if block_given?
+  #     display_array << node.data unless block_given?
+  #     queue << node.left_child unless node.left_child.nil?
+  #     queue << node.right_child unless node.right_child.nil?
+  #     queue.shift
+  #   end
+  #   block_given? ? yield(node) : display_array
+  # end
+
+  # NEED TO REWRITE, RETURNS PREORDER ARRAY!!!!!!
+  # recursive solution -- returns array of values if no block given
+  # def level_order(node = @root, queue = [], display_array = [], &block)
+  #   return display_array if node.nil? unless block_given?
+  #   return if node.nil?
+
+  #   queue << node
+  #   node = queue.first
+  #   if block_given?
+  #     level_order(node.left_child, queue[1..-1], &block)
+  #     level_order(node.right_child, queue[1..-1], &block)
+  #   else
+  #     display_array << node.data
+  #     level_order(node.left_child, queue[1..-1], display_array)
+  #     level_order(node.right_child, queue[1..-1], display_array)
+  #   end
+  #   block_given? ? yield(node) : display_array
+  # end
+
+  def level_order(node = @root, array = [])
+    depth = depth(node)
+    level = 1
+    until level > depth
+      result = push_level_to_array(node, level, array)
+      level += 1
+    end
+    result
+  end
+
+  def push_level_to_array(node = @root, level = depth, array = [])
+    return array if node.nil?
+
+    if level == 1
+      array << node.data
+    else
+      push_level_to_array(node.left_child, level - 1, array)
+      push_level_to_array(node.right_child, level - 1, array)
+    end
+  end
+
+  def preorder(node = @root, display_array = [], &block)
+    return display_array if node.nil? unless block_given?
+    return if node.nil?
+
+    if block_given?
+      preorder(node.left_child, &block)
+      preorder(node.right_child, &block)
+    else
+      display_array << node.data
+      preorder(node.left_child, display_array)
+      preorder(node.right_child, display_array)
     end
     block_given? ? yield(node) : display_array
   end
 
-  # recursive solution -- returns array of values if no block given
-  def level_order(node = @root, queue = [], display_array = [], &block)
-    return display_array if node.nil? unless block_given?
-    return if node.nil?
+  def depth(node = @root)
+    return 0 if node.nil?
 
-    queue << node
-    node = queue.first
-    if block_given?
-      level_order(node.left_child, queue[1..-1], &block)
-      level_order(node.right_child, queue[1..-1], &block)
-    else
-      display_array << node.data 
-      level_order(node.left_child, queue[1..-1], display_array)
-      level_order(node.right_child, queue[1..-1], display_array)
-    end
-    block_given? ? yield(node) : display_array
+    depth_left = depth(node.left_child)
+    depth_right = depth(node.right_child)
+    depth_left > depth_right ? depth_left + 1 : depth_right + 1
   end
 end
 
