@@ -88,58 +88,50 @@ class Tree
   end
 
   # iterative solution -- returns array of values if no block given
-  # def level_order(node = @root, queue = [], display_array = [])
-  #   return if node.nil?
+  def level_order(node = @root, queue = [], display_array = [])
+    return if node.nil?
 
-  #   queue << node
-  #   until queue.empty?
-  #     node = queue.first
-  #     yield(node) if block_given?
-  #     display_array << node.data unless block_given?
-  #     queue << node.left_child unless node.left_child.nil?
-  #     queue << node.right_child unless node.right_child.nil?
-  #     queue.shift
-  #   end
-  #   block_given? ? yield(node) : display_array
-  # end
+    queue << node
+    until queue.empty?
+      node = queue.first
+      yield(node) if block_given?
+      display_array << node.data unless block_given?
+      queue << node.left_child unless node.left_child.nil?
+      queue << node.right_child unless node.right_child.nil?
+      queue.shift
+    end
+    block_given? ? yield(node) : display_array
+  end
 
-  # NEED TO REWRITE, RETURNS PREORDER ARRAY!!!!!!
-  # recursive solution -- returns array of values if no block given
-  # def level_order(node = @root, queue = [], display_array = [], &block)
-  #   return display_array if node.nil? unless block_given?
-  #   return if node.nil?
+  # traverses tree in level order. returns array if no block given
+  def level_order(node = @root, array = [], level = 1, &block)
+    return level_order_block(node, level, &block) if block_given?
 
-  #   queue << node
-  #   node = queue.first
-  #   if block_given?
-  #     level_order(node.left_child, queue[1..-1], &block)
-  #     level_order(node.right_child, queue[1..-1], &block)
-  #   else
-  #     display_array << node.data
-  #     level_order(node.left_child, queue[1..-1], display_array)
-  #     level_order(node.right_child, queue[1..-1], display_array)
-  #   end
-  #   block_given? ? yield(node) : display_array
-  # end
-
-  def level_order(node = @root, array = [])
     depth = depth(node)
-    level = 1
-    until level > depth
-      result = push_level_to_array(node, level, array)
+    while level <= depth
+      result = push_node_data_to_array(node, level, array)
       level += 1
     end
     result
   end
 
-  def push_level_to_array(node = @root, level = depth, array = [])
+  def level_order_block(node = @root, level = depth, &block)
+    return if node.nil?
+
+    yield(node)
+    level_order_block(node.left_child, level - 1, &block)
+    level_order_block(node.right_child, level - 1, &block)
+  end
+
+  # returns array of values at each level
+  def push_node_data_to_array(node = @root, level = depth, array = [])
     return array if node.nil?
 
     if level == 1
       array << node.data
     else
-      push_level_to_array(node.left_child, level - 1, array)
-      push_level_to_array(node.right_child, level - 1, array)
+      push_node_data_to_array(node.left_child, level - 1, array)
+      push_node_data_to_array(node.right_child, level - 1, array)
     end
   end
 
