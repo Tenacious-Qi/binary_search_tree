@@ -73,7 +73,7 @@ class Tree
     end
   end
 
-  iterative solution -- returns array of values if no block given
+  # iterative solution -- returns array of values if no block given
   def level_order_iterative(node = @root, queue = [], display_array = [])
     return if node.nil?
 
