@@ -5,18 +5,16 @@ class Tree
   attr_accessor :root
 
   def initialize(array = nil)
-    @root = build_tree(array) unless array.nil?
+    @root = build_tree(array.sort.uniq) unless array.nil?
   end
 
   def build_tree(array)
     return if array.size.zero?
 
-    arr = array.sort
-    arr.uniq!
-    mid_index = (arr.size - 1) / 2
-    left = build_tree(arr[0...mid_index])
-    right = build_tree(arr[(mid_index + 1)...arr.size])
-    Node.new(arr[mid_index], left, right)
+    mid_index = (array.size - 1) / 2
+    left = build_tree(array[0...mid_index])
+    right = build_tree(array[(mid_index + 1)...array.size])
+    Node.new(array[mid_index], left, right)
   end
 
   def insert(value, node = @root)
@@ -75,28 +73,20 @@ class Tree
     end
   end
 
-  def height(node = @root)
-    return -1 if node.nil?
+  iterative solution -- returns array of values if no block given
+  def level_order_iterative(node = @root, queue = [], display_array = [])
+    return if node.nil?
 
-    left_height = height(node.left_child)
-    right_height = height(node.right_child)
-    [left_height, right_height].max + 1
+    queue << node
+    until queue.empty?
+      node = queue.shift
+      result = yield(node) if block_given?
+      display_array << node.data unless block_given?
+      queue << node.left_child unless node.left_child.nil?
+      queue << node.right_child unless node.right_child.nil?
+    end
+    block_given? ? result : display_array
   end
-
-  # iterative solution -- returns array of values if no block given
-  # def level_order_iterative(node = @root, queue = [], display_array = [])
-  #   return if node.nil?
-
-  #   queue << node
-  #   until queue.empty?
-  #     node = queue.shift
-  #     result = yield(node) if block_given?
-  #     display_array << node.data unless block_given?
-  #     queue << node.left_child unless node.left_child.nil?
-  #     queue << node.right_child unless node.right_child.nil?
-  #   end
-  #   block_given? ? result : display_array
-  # end
 
   def level_order(node = @root, array = [], level = 0, &block)
     return level_order_block(queue = [@root], &block) if block_given?
@@ -176,12 +166,18 @@ class Tree
     block_given? ? yield(node) : display_array
   end
 
+  def height(node = @root)
+    return -1 if node.nil?
+
+    left_height = height(node.left_child)
+    right_height = height(node.right_child)
+    [left_height, right_height].max + 1
+  end
+
   def balanced?
-    left = @root.left_child
-    right = @root.right_child
-    if height(left) - height(right) > 1 || height(right) - height(left) > 1
-      return false
-    end
+    left = height(@root.left_child)
+    right = height(@root.right_child)
+    return false if left - right > 1 || right - left > 1
 
     true
   end
