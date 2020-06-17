@@ -126,44 +126,30 @@ class Tree
   def preorder(node = @root, display_array = [], &block)
     return if node.nil?
 
-    if block_given?
-      preorder(node.left_child, &block)
-      preorder(node.right_child, &block)
-    else
-      display_array << node.data
-      preorder(node.left_child, display_array)
-      preorder(node.right_child, display_array)
-    end
-    block_given? ? yield(node) : display_array
+    block_given? ? yield(node) : display_array << node.data
+    preorder(node.left_child, display_array, &block)
+    preorder(node.right_child, display_array, &block)
+    display_array unless block_given?
   end
 
   # visits nodes in order <left><node><right>
   def inorder(node = @root, display_array = [], &block)
     return if node.nil?
 
-    if block_given?
-      inorder(node.left_child, &block)
-      inorder(node.right_child, &block)
-    else
-      inorder(node.left_child, display_array)
-      display_array << node.data
-      inorder(node.right_child, display_array)
-    end
-    block_given? ? yield(node) : display_array
+    inorder(node.left_child, display_array, &block)
+    block_given? ? yield(node) : display_array << node.data
+    inorder(node.right_child, display_array, &block)
+    display_array unless block_given?
   end
 
+  # visits nodes in post order <left><right><node>
   def postorder(node = @root, display_array = [], &block)
     return if node.nil?
 
-    if block_given?
-      postorder(node.left_child, &block)
-      postorder(node.right_child, &block)
-    else
-      postorder(node.left_child, display_array)
-      postorder(node.right_child, display_array)
-      display_array << node.data
-    end
-    block_given? ? yield(node) : display_array
+    postorder(node.left_child, display_array, &block)
+    postorder(node.right_child, display_array, &block)
+    block_given? ? yield(node) : display_array << node.data
+    display_array unless block_given?
   end
 
   def height(node = @root)
