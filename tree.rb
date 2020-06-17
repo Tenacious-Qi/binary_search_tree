@@ -54,7 +54,7 @@ class Tree
     node
   end
 
-  # finds largest node in left subtree
+  # finds largest node in left subtree if argument is node.left_child
   def find_max(node)
     return nil if node.nil?
     return find_max(node.right_child) unless node.right_child.nil?
