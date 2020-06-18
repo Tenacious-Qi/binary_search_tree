@@ -18,6 +18,8 @@ class Tree
   end
 
   def insert(value, node = @root)
+    return warn 'node already exists!' if find_node(value)
+
     if node.nil?
       node = Node.new(value)
       @root = node if @root.nil?
@@ -168,7 +170,7 @@ class Tree
     true
   end
 
-  def rebalance!
+  def rebalance
     return warn 'Tree is already balanced.' if balanced?
 
     initialize(level_order)
