@@ -5,7 +5,11 @@ class Node
   include Comparable
 
   def <=>(other)
-    data <=> other.data
+    if other.class.is_a?(Node)
+      data <=> other.data
+    else
+      data <=> other
+    end
   end
 
   attr_accessor :data, :left_child, :right_child

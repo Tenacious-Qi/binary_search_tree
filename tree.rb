@@ -66,13 +66,17 @@ class Tree
 
   def find_node(value, node = @root)
     return nil if node.nil?
-    return node if value == node.data
+    return node if node == value
 
     if value < node.data
       find_node(value, node.left_child)
     else
       find_node(value, node.right_child)
     end
+  end
+
+  def find_value(value)
+    level_order { |node| return node if node == value }
   end
 
   # iterative solution -- returns array of values if no block given
