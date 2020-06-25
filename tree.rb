@@ -80,19 +80,19 @@ class Tree
   end
 
   # iterative solution -- returns array of values if no block given
-  def level_order_iterative(node = @root, queue = [], display_array = [])
-    return if node.nil?
+    def level_order_iterative(node = @root, queue = [], display_array = [])
+      return if node.nil?
 
-    queue << node
-    until queue.empty?
-      node = queue.shift
-      result = yield(node) if block_given?
-      display_array << node.data unless block_given?
-      queue << node.left_child unless node.left_child.nil?
-      queue << node.right_child unless node.right_child.nil?
+      queue << node
+      until queue.empty?
+        node = queue.shift
+        result = yield(node) if block_given?
+        display_array << node.data unless block_given?
+        queue << node.left_child unless node.left_child.nil?
+        queue << node.right_child unless node.right_child.nil?
+      end
+      block_given? ? result : display_array
     end
-    block_given? ? result : display_array
-  end
 
   def level_order(node = @root, array = [], level = 0, &block)
     return level_order_block(queue = [@root], &block) if block_given?
@@ -166,17 +166,19 @@ class Tree
     [left_height, right_height].max + 1
   end
 
-  def balanced?
-    left = height(@root.left_child)
-    right = height(@root.right_child)
-    return false if left - right > 1 || right - left > 1
+ def balanced?(node = @root)
+  return false unless (height(node.left_child) - height(node.right_child)).abs <= 1
 
-    true
+  if node.left_child || node.right_child
+    return false unless balanced?(node.left_child) || balanced?(node.right_child)
   end
+
+  true
+ end
 
   def rebalance
     return warn 'Tree is already balanced.' if balanced?
 
-    initialize(level_order)
+    initialize(inorder)
   end
 end
