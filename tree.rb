@@ -36,7 +36,7 @@ class Tree
   # if node has two children, finds max value of L subtree.
   # copies that value into node to delete; removes max value or L subtree (temp)
   def delete(value, node = @root)
-    return node if node.nil?
+    return if node.nil?
 
     if value < node.data
       node.left_child = delete(value, node.left_child)
@@ -58,14 +58,14 @@ class Tree
 
   # finds largest node in left subtree if argument is node.left_child
   def find_max(node)
-    return nil if node.nil?
+    return if node.nil?
     return find_max(node.right_child) unless node.right_child.nil?
 
     node
   end
 
   def find_node(value, node = @root)
-    return nil if node.nil?
+    return if node.nil?
     return node if node == value
 
     if value < node.data
